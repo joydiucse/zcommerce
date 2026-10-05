@@ -55,10 +55,10 @@ async function flushRedis() {
   }
 }
 
-async function createTenantShell(knex, { name, slug, email, phone, plan, status, customDomain = null, siteUrl = null, createdAt, ownerName, passwordHash }) {
+async function createTenantShell(knex, { name, slug, email, phone, plan, status, siteUrl = null, createdAt, ownerName, passwordHash }) {
   const [tenant] = await knex('tenants')
     .insert({
-      name, slug, email, phone, status, custom_domain: customDomain, site_url: siteUrl, site_host: siteHostOf(siteUrl), plan_id: plan.id,
+      name, slug, email, phone, status, site_url: siteUrl, site_host: siteHostOf(siteUrl), plan_id: plan.id,
       trial_ends_at: status === 'trial' ? new Date(Date.now() + 10 * DAY) : null,
       created_at: createdAt, updated_at: createdAt,
     })

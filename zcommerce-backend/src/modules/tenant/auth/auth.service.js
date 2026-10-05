@@ -6,7 +6,7 @@ import { TenantNotFoundError, TenantSuspendedError, UnauthenticatedError, Valida
 
 const AUD = 'tenant';
 
-export const presentTenant = (t) => ({ id: t.id, name: t.name, slug: t.slug, status: t.status, custom_domain: t.custom_domain, site_url: t.site_url ?? null });
+export const presentTenant = (t) => ({ id: t.id, name: t.name, slug: t.slug, status: t.status, site_url: t.site_url ?? null });
 
 export class TenantAuthService {
   constructor({ tenantAuthRepository }) {

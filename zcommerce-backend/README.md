@@ -64,7 +64,7 @@ Coupons: `WELCOME10` (10% off), `FREESHIP` (free shipping over $25).
 | `JWT_ACCESS_TTL`, `JWT_REFRESH_TTL` | 900, 2592000 | seconds |
 | `ENCRYPTION_KEY` | n/a | AES-256-GCM key material |
 | `CORS_ORIGINS` | `http://localhost:5173,http://localhost:3001` | comma separated, `*` allowed |
-| `DEFAULT_STORE_TENANT` | (empty) | store fallback slug when no header or host matches (`demo` locally) |
+| `PLATFORM_NAME` / `PLATFORM_TAGLINE` / `ADMIN_URL` / `SUPPORT_EMAIL` | zCommerce / … | platform details served by `GET /store/platform` (shown by the storefront on hosts with no store) |
 | `STOREFRONT_URL` | `http://localhost:3001` | fallback `store_url` in `/store/settings`; target of the revalidate webhook |
 | `REVALIDATE_SECRET` | _(empty = disabled)_ | after admin writes to settings/products/categories/brands/reviews/pages/inventory, the API POSTs cache tags to `STOREFRONT_URL/api/revalidate` so the store updates instantly |
 | `UPLOAD_MAX_MB` | 5 | |

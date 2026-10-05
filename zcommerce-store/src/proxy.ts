@@ -13,7 +13,7 @@ import { domainKeyFromHost, normalizeHost } from "@/lib/tenant-key";
 type Resolution = "ok" | "not_found" | "suspended";
 
 const API_URL = (process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1").replace(/\/$/, "");
-const HIT_TTL = 60_000;
+const HIT_TTL = 30_000;
 const MISS_TTL = 10_000;
 const cache = new Map<string, { value: Resolution; expires: number }>();
 
@@ -51,9 +51,15 @@ export async function proxy(req: NextRequest) {
 
   const resolution: Resolution = host ? await resolveHost(host) : "not_found";
   if (resolution !== "ok") {
+    // The page renders "not found" via notFound() (HTTP 404); suspended stores get a 503.
     url.pathname = `/store-unavailable/${resolution}`;
-    url.search = `?host=${encodeURIComponent(host || rawHost || "")}`;
-    return NextResponse.rewrite(url, { status: resolution === "suspended" ? 503 : 404 });
+    url.search = "";
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-zc-store-host", host || (rawHost ?? "").slice(0, 255));
+    return NextResponse.rewrite(url, {
+      request: { headers: requestHeaders },
+      ...(resolution === "suspended" ? { status: 503 } : {}),
+    });
   }
 
   const key = domainKeyFromHost(host);

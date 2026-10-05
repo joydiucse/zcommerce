@@ -29,27 +29,31 @@ The build does not depend on the backend. If the API cannot be reached, settings
 |---|---|---|
 | `API_URL` | `http://localhost:4000/api/v1` | API base for server components, the sitemap and OG images |
 | `NEXT_PUBLIC_API_URL` | `http://localhost:4000/api/v1` | API base for the browser (cart, checkout, account, live search) |
-| `STORE_TENANT` | `demo` | Pins one tenant, sent as `X-Tenant`. Leave it empty for host-based multi-tenancy |
-| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3001` | Public URL, used as the canonical/OG fallback |
 | `REVALIDATE_SECONDS` | `60` | `next.revalidate` for every API fetch |
 | `REVALIDATE_SECRET` | `change-me` | Shared secret for `POST /api/revalidate` |
 
 ## Multi-tenancy and domain mapping
 
-`src/proxy.ts` (Next 16's replacement for middleware) rewrites every storefront request internally to `/<domain-key>/<path>`, which is served by `src/app/[domain]/…`. The visible URL does not change. Because the tenant is part of the route, each tenant gets its own ISR cache entries, and pages never need to call `headers()`.
+The store has no tenant configuration of its own: **the request host decides which store is shown**, and the backend owns the mapping. Each tenant has a **Store URL** (`tenants.site_url`, set in the platform admin under Tenants). Its host, including any non-default port, is matched exactly against the request host:
 
-| Mode | Domain key | Headers sent to the API |
+| Request | Store URL that matches | Result |
 |---|---|---|
-| `STORE_TENANT=demo` (local dev, single-tenant deploys) | `_default` | `X-Tenant: demo` (this wins on the backend) and `X-Store-Domain: <host of NEXT_PUBLIC_SITE_URL>` |
-| `STORE_TENANT` empty (SaaS) | request host, lower-cased, port removed (e.g. `shop.acme.com`) | `X-Store-Domain: shop.acme.com`, which the backend resolves against `tenants.custom_domain` |
+| `https://shop.acme.com/...` | `https://shop.acme.com` | Acme's store |
+| `https://acme.zcommerce.app/...` | `https://acme.zcommerce.app` | Acme's store (subdomain) |
+| `http://localhost:3002/...` | `http://localhost:3002` | that tenant's store (one port per store in local dev) |
+| any host with no matching Store URL | — | **Store not found** page with the platform's details and plans (HTTP 404, noindex) |
+| host of a suspended tenant | — | "temporarily unavailable" page (HTTP 503) |
 
-To map a merchant domain:
+How it works:
 
-1. Point the domain's DNS (A or CNAME record) at the storefront deployment.
-2. Set the tenant's `custom_domain` to that hostname in the system admin.
-3. Run the store with `STORE_TENANT` unset. Requests for `shop.acme.com` now render that tenant's catalogue, theme and SEO, and its canonical URLs use `https://shop.acme.com`. If `seo.canonical_url` is set, it takes priority.
+1. `src/proxy.ts` (Next 16's middleware) asks the backend `GET /store/resolve` with `X-Store-Domain: <host:port>` and caches the answer in memory for 30s (10s for misses).
+2. Known hosts are rewritten internally to `/<host-key>/<path>` (e.g. `/localhost_3002/products`), served by `src/app/[domain]/…`. The visible URL does not change, and each host gets its own ISR cache entries.
+3. Unknown or suspended hosts are rewritten to `/store-unavailable/…`, which renders `GET /store/platform` (platform name, tagline, merchant login link and plans).
+4. Every server-side API call sends `X-Store-Domain: <host:port>`. Canonical, OG and sitemap URLs use `seo.canonical_url`, then the tenant's Store URL (`store_url` from the API), then the request host. `robots.txt` disallows everything and `sitemap.xml` is empty on unknown hosts.
 
-Browser-side calls send `X-Tenant: <settings.tenant.slug>`, which the root layout passes down through `StoreProvider`. The backend must allow the `X-Tenant`, `X-Cart-Token` and `Authorization` headers in CORS for the storefront origin.
+To put a merchant on their own domain: point the domain's DNS at the storefront deployment, then set the tenant's Store URL to `https://their-domain`. Locally, set it to `http://localhost:<port>` and run a store on that port (`npm run dev:port -- <port>`), or point several hosts at one server.
+
+Browser-side calls send `X-Tenant: <settings.tenant.slug>`, which the root layout passes down through `StoreProvider`. The backend's public `/store` API accepts any origin (storefronts live on arbitrary domains and use bearer tokens, not cookies).
 
 ## Settings-driven storefront
 

@@ -43,15 +43,13 @@ export class TenantService {
    * Provision a tenant: tenant row, default Owner/Manager/Staff roles, owner user,
    * default settings and a trial subscription — all in one transaction.
    */
-  /** A store host may belong to one tenant only, whether set as custom_domain or via site_url. */
-  async assertHostsAvailable({ custom_domain, site_url }, exceptId = null) {
-    const checks = [['custom_domain', custom_domain || null], ['site_url', siteHostOf(site_url)]];
-    for (const [field, host] of checks) {
-      if (!host) continue;
-      const q = db('tenants').where((w) => w.whereRaw('lower(custom_domain) = ?', [host]).orWhere('site_host', host));
-      if (exceptId) q.whereNot('id', exceptId);
-      if (await q.first('id')) throw ValidationError.field(field, `${host} is already used by another store`);
-    }
+  /** A store URL's host (incl. port) may belong to one tenant only. */
+  async assertHostsAvailable({ site_url }, exceptId = null) {
+    const host = siteHostOf(site_url);
+    if (!host) return;
+    const q = db('tenants').where('site_host', host);
+    if (exceptId) q.whereNot('id', exceptId);
+    if (await q.first('id')) throw ValidationError.field('site_url', `${host} is already used by another store`);
   }
 
   async create(data, req) {
@@ -68,7 +66,6 @@ export class TenantService {
           slug: tenantData.slug,
           email: tenantData.email,
           phone: tenantData.phone || null,
-          custom_domain: tenantData.custom_domain || null,
           site_url: tenantData.site_url || null,
           site_host: siteHostOf(tenantData.site_url),
           plan_id: plan?.id || null,
@@ -126,7 +123,6 @@ export class TenantService {
   async update(id, data, req) {
     const existing = await this.repo.findById(id);
     if (!existing) throw new NotFoundError('Tenant not found');
-    if (data.custom_domain === '') data.custom_domain = null;
     await this.assertHostsAvailable(data, id);
     if (data.site_url !== undefined) {
       data.site_url = data.site_url ? data.site_url.replace(/\/+$/, '') : null;

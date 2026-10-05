@@ -23,7 +23,7 @@ Base URL: `http://localhost:4000/api/v1`. All keys are snake_case. IDs are UUIDs
 ## Auth headers
 
 * System and tenant routes: `Authorization: Bearer <access_token>` (aud `system` / `tenant`).
-* Store: `X-Tenant: <slug>` (or `X-Store-Domain` / `Host`), plus an optional `Authorization: Bearer <customer token>`.
+* Store: `X-Store-Domain: <host[:port]>` matched to the tenant's `site_url` (or `X-Tenant: <slug>` / `Host`), plus an optional `Authorization: Bearer <customer token>`.
 * Login responses: `{ access_token, refresh_token, expires_in, user }`. The tenant login also includes `tenant`.
 
 ## Endpoint map

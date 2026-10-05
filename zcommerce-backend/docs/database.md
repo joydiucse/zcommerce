@@ -26,7 +26,7 @@ npm run db:reset           # rollback all + migrate + seed
 | `system_roles` | `permissions` jsonb array, `is_system` |
 | `system_users` | unique `email`, `role_id → system_roles` (restrict), `status active\|disabled` |
 | `plans` | unique `slug`, `price_monthly`, `price_yearly`, `limits {products, staff, storage_mb}`, `features[]` |
-| `tenants` | unique `slug`, unique nullable `custom_domain`, `status trial\|active\|suspended`, `plan_id`, `owner_id → users` (set null) |
+| `tenants` | unique `slug`, nullable `site_url` + unique `site_host` (its host:port, matched against the storefront request host), `status trial\|active\|suspended`, `plan_id`, `owner_id → users` (set null) |
 | `subscriptions` | `tenant_id`, `plan_id`, `status trialing\|active\|past_due\|canceled`, `billing_cycle`, `amount`, period dates |
 | `invoices` | unique `number` (`INV-000001`, from sequence `invoice_number_seq`), `status draft\|open\|paid\|void`, `items` jsonb |
 | `audit_logs` | `actor_type system\|tenant`, `actor_id`, `tenant_id`, `action` (e.g. `tenant.suspended`), `entity_*`, `changes`, `ip`, `user_agent` |
@@ -71,7 +71,7 @@ npm run db:reset           # rollback all + migrate + seed
 
 * System admin `admin@zcommerce.test` / `password123` (Super Admin `*`), plus `support@zcommerce.test` (read-only role).
 * Plans Starter $19, Growth $49, Pro $99.
-* Tenant **demo** ("Demo Store", `custom_domain = localhost`) on an active Growth subscription with 2 invoices
+* Tenant **demo** ("Demo Store", `site_url = http://localhost:3001`) on an active Growth subscription with 2 invoices
   (1 paid, 1 open). Staff: `owner@demo.test` (Owner), `manager@demo.test` (Manager) and `staff@demo.test` (Staff), all
   with password `password123`.
 * 5 extra tenants (active, trial and suspended) so the platform dashboard has data.

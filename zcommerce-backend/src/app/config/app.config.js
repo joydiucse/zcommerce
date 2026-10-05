@@ -10,8 +10,6 @@ export default {
   logLevel: env.LOG_LEVEL,
   logsDir: path.join(ROOT_DIR, 'logs'),
   corsOrigins: env.CORS_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean),
-  /** Optional platform domain: `<slug>.<storeBaseDomain>` hosts resolve to that tenant. */
-  storeBaseDomain: env.STORE_BASE_DOMAIN.trim().toLowerCase().replace(/^\.+/, '') || null,
   platform: {
     name: env.PLATFORM_NAME,
     tagline: env.PLATFORM_TAGLINE,

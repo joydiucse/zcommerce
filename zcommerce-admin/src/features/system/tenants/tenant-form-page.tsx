@@ -33,10 +33,10 @@ const base = {
   email: z.email("Enter a valid email"),
   phone: z.string().trim(),
   plan_id: z.string().nullable(),
-  custom_domain: z
+  site_url: z
     .string()
     .trim()
-    .regex(/^$|^[a-z0-9.-]+(:[0-9]+)?$/i, "Enter a host name like shop.example.com"),
+    .regex(/^$|^https?:\/\/[^\s/]+(\/.*)?$/i, "Enter a full URL like https://shop.example.com"),
 };
 
 const createSchema = z.object({
@@ -67,7 +67,7 @@ function CreateTenant() {
   const slugTouched = useRef(false);
   const form = useForm<CreateValues>({
     resolver: zodResolver(createSchema),
-    defaultValues: { name: "", slug: "", email: "", phone: "", plan_id: null, custom_domain: "", owner: { name: "", email: "", password: "" } },
+    defaultValues: { name: "", slug: "", email: "", phone: "", plan_id: null, site_url: "", owner: { name: "", email: "", password: "" } },
   });
 
   const onSubmit = async (v: CreateValues) => {
@@ -76,7 +76,7 @@ function CreateTenant() {
         ...v,
         phone: v.phone || undefined,
         plan_id: v.plan_id || undefined,
-        custom_domain: v.custom_domain || undefined,
+        site_url: v.site_url || undefined,
       });
       navigate(created?.id ? `/system/tenants/${created.id}` : "/system/tenants", { replace: true });
     } catch (e) {
@@ -116,7 +116,13 @@ function CreateTenant() {
               <TextField control={form.control} name="phone" label="Phone" />
             </div>
             <SelectField control={form.control} name="plan_id" label="Plan" options={planOptions} noneLabel="No plan" />
-            <TextField control={form.control} name="custom_domain" label="Custom domain" placeholder="shop.example.com" />
+            <TextField
+              control={form.control}
+              name="site_url"
+              label="Store URL"
+              placeholder="https://shop.example.com"
+              description="Public storefront URL. Visitors to this host (and port) see this store, e.g. http://localhost:3002."
+            />
           </FormSection>
           <FormSection title="Owner account" description="The first staff user, with full access (Owner role).">
             <TextField control={form.control} name="owner.name" label="Owner name" />
@@ -144,17 +150,17 @@ function EditTenant({ id }: { id: string }) {
   const invoices = useListQuery<Invoice>("/billing/invoices", { tenant_id: id, limit: 10 });
   const form = useForm<EditValues>({
     resolver: zodResolver(editSchema),
-    defaultValues: { name: "", slug: "", email: "", phone: "", plan_id: null, custom_domain: "" },
+    defaultValues: { name: "", slug: "", email: "", phone: "", plan_id: null, site_url: "" },
   });
 
   useEffect(() => {
     const t = detail.data;
-    if (t) form.reset({ name: t.name, slug: t.slug, email: t.email, phone: t.phone ?? "", plan_id: t.plan_id, custom_domain: t.custom_domain ?? "" });
+    if (t) form.reset({ name: t.name, slug: t.slug, email: t.email, phone: t.phone ?? "", plan_id: t.plan_id, site_url: t.site_url ?? "" });
   }, [detail.data, form]);
 
   const onSubmit = async (v: EditValues) => {
     try {
-      await update.mutateAsync({ id, body: { ...v, phone: v.phone || null, custom_domain: v.custom_domain || null } });
+      await update.mutateAsync({ id, body: { ...v, phone: v.phone || null, site_url: v.site_url || null } });
     } catch (e) {
       applyApiErrors(e, form.setError);
     }
@@ -230,7 +236,13 @@ function EditTenant({ id }: { id: string }) {
               <TextField control={form.control} name="email" label="Store email" type="email" />
               <TextField control={form.control} name="phone" label="Phone" />
               <SelectField control={form.control} name="plan_id" label="Plan" options={planOptions} noneLabel="No plan" />
-              <TextField control={form.control} name="custom_domain" label="Custom domain" placeholder="shop.example.com" />
+              <TextField
+                control={form.control}
+                name="site_url"
+                label="Store URL"
+                placeholder="https://shop.example.com"
+                description="Public storefront URL. Visitors to this host (and port) see this store, e.g. http://localhost:3002."
+              />
             </FormSection>
           </div>
           <div className="space-y-4 lg:col-span-3">
@@ -269,3 +281,4 @@ export function TenantFormPage() {
   const { id } = useParams();
   return id ? <EditTenant id={id} /> : <CreateTenant />;
 }
+

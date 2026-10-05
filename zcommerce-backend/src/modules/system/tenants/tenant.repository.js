@@ -21,7 +21,7 @@ export class TenantRepository extends GlobalRepository {
     if (query.plan_id) qb.where('tenants.plan_id', query.plan_id);
     return paginateQuery(qb, query, {
       sortable: { created_at: 'tenants.created_at', name: 'tenants.name', slug: 'tenants.slug', status: 'tenants.status' },
-      searchColumns: ['tenants.name', 'tenants.slug', 'tenants.email', 'tenants.custom_domain'],
+      searchColumns: ['tenants.name', 'tenants.slug', 'tenants.email', 'tenants.site_url'],
     });
   }
 

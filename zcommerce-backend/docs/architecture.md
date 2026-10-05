@@ -6,7 +6,7 @@ zCommerce is a multi-tenant SaaS e-commerce API: one Node.js process serves thre
 |---|---|---|---|---|
 | System | `/api/v1/system` | Platform super-admins (`system_users`) | `system` | n/a |
 | Tenant | `/api/v1/tenant` | Merchant staff (`users`) | `tenant` | JWT `tenant_id` |
-| Store | `/api/v1/store` | Public shoppers and customers | `customer` (optional) | `X-Tenant` → `X-Store-Domain` → `Host` → `DEFAULT_STORE_TENANT` |
+| Store | `/api/v1/store` | Public shoppers and customers | `customer` (optional) | `X-Tenant` → `X-Store-Domain` → `Host`, host[:port] matched to `tenants.site_host` (no fallback) |
 
 ## Layout
 

@@ -34,7 +34,6 @@ export const env = {
   JWT_REFRESH_TTL: int('JWT_REFRESH_TTL', 60 * 60 * 24 * 30),
   ENCRYPTION_KEY: str('ENCRYPTION_KEY', 'dev-encryption-key'),
   CORS_ORIGINS: str('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3001'),
-  STORE_BASE_DOMAIN: str('STORE_BASE_DOMAIN', ''),
   PLATFORM_NAME: str('PLATFORM_NAME', 'zCommerce'),
   PLATFORM_TAGLINE: str('PLATFORM_TAGLINE', 'Launch and grow your online store'),
   ADMIN_URL: str('ADMIN_URL', 'http://localhost:5173'),

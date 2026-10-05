@@ -76,7 +76,7 @@ export interface TenantRef {
   name: string;
   slug: string;
   status: TenantStatus;
-  custom_domain: string | null;
+  site_url: string | null;
 }
 
 export interface LoginResponse extends AuthTokens {
@@ -133,7 +133,7 @@ export interface Tenant extends Timestamps {
   id: ID;
   name: string;
   slug: string;
-  custom_domain: string | null;
+  site_url: string | null;
   email: string;
   phone: string | null;
   status: TenantStatus;

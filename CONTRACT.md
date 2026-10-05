@@ -34,7 +34,7 @@ Three scopes, three token audiences (JWT `aud`): `system`, `tenant`, `customer`.
 |---|---|---|---|
 | System | `/system/*` | Platform super-admins (`system_users`) | none |
 | Tenant | `/tenant/*` | Merchant staff (`users` with `tenant_id`) | from JWT `tenant_id` |
-| Store | `/store/*` | Public shoppers & customers | header `X-Tenant: <slug>`, else header `X-Store-Domain: <host>`, else request `Host` matched to `tenants.custom_domain` |
+| Store | `/store/*` | Public shoppers & customers | header `X-Tenant: <slug>` (browser calls), else `X-Store-Domain: <host[:port]>` (storefront server), else request `Host`, matched exactly to `tenants.site_host` (host of `site_url`). No fallback: unknown → `TENANT_NOT_FOUND` |
 
 - Access token: JWT, 15 min, `Authorization: Bearer <token>`. Payload: `{ sub, aud, tenant_id?, role_id?, type: "access" }`.
 - Refresh token: JWT 30 days, stored hashed in Redis (`refresh:<aud>:<jti>`) so logout/rotation revokes it.
@@ -84,7 +84,7 @@ Slugs are unique per tenant `(tenant_id, slug)`.
 - `system_roles` (name, description, permissions jsonb array, is_system bool)
 - `system_users` (name, email unique, password_hash, role_id → system_roles, status active|disabled, last_login_at)
 - `plans` (name, slug unique, description, price_monthly, price_yearly, currency, limits jsonb `{products, staff, storage_mb}`, features jsonb array of strings, is_active, sort_order)
-- `tenants` (name, slug unique, custom_domain unique nullable, email, phone, status trial|active|suspended, plan_id → plans nullable, trial_ends_at, owner_id nullable)
+- `tenants` (name, slug unique, site_url nullable (public storefront URL), site_host unique nullable (normalised host[:port] of site_url, default ports dropped), email, phone, status trial|active|suspended, plan_id → plans nullable, trial_ends_at, owner_id nullable)
 - `subscriptions` (tenant_id, plan_id, status trialing|active|past_due|canceled, billing_cycle monthly|yearly, amount, current_period_start, current_period_end, canceled_at)
 - `invoices` (tenant_id, subscription_id nullable, number unique e.g. `INV-000001`, amount, currency, status draft|open|paid|void, due_date, paid_at, items jsonb)
 - `audit_logs` (actor_type system|tenant, actor_id, tenant_id nullable, action e.g. `tenant.created`, entity_type, entity_id, changes jsonb, ip, user_agent)
@@ -168,7 +168,7 @@ notifications: { admin_order_email: "", low_stock_alerts: true, customer_order_e
 ### System (`/system`)
 - `POST /auth/login {email, password}` · `POST /auth/refresh` · `POST /auth/logout {refresh_token}` · `GET /auth/me` → `{ user: {id,name,email,role:{id,name}}, permissions: [] }`
 - `GET /dashboard` → `{ tenants_total, tenants_active, tenants_trial, mrr, invoices_open_amount, recent_tenants: [...], tenants_by_month: [{month, count}] }`
-- `CRUD /tenants` — filters `status`, `plan_id`. Create body: `{ name, slug, email, phone?, plan_id?, custom_domain?, owner: { name, email, password } }` → creates tenant, default Owner/Manager/Staff roles, owner user, default settings, trial subscription. Extra: `POST /tenants/:id/suspend`, `POST /tenants/:id/activate`.
+- `CRUD /tenants` — filters `status`, `plan_id`. Create body: `{ name, slug, email, phone?, plan_id?, site_url?, owner: { name, email, password } }` → creates tenant, default Owner/Manager/Staff roles, owner user, default settings, trial subscription. Extra: `POST /tenants/:id/suspend`, `POST /tenants/:id/activate`.
 - `CRUD /plans`
 - `GET /subscriptions` (filters `status`, `tenant_id`) · `POST /subscriptions` · `GET /subscriptions/:id` · `PUT /subscriptions/:id` · `POST /subscriptions/:id/cancel`
 - `GET /billing/invoices` (filters `status`, `tenant_id`) · `POST /billing/invoices` · `GET /billing/invoices/:id` · `POST /billing/invoices/:id/mark-paid` · `POST /billing/invoices/:id/void`
@@ -177,7 +177,7 @@ notifications: { admin_order_email: "", low_stock_alerts: true, customer_order_e
 - `GET /audit-logs` (filters `actor_type`, `tenant_id`, `action`, `from`, `to`)
 
 ### Tenant (`/tenant`)
-- `POST /auth/login { tenant, email, password }` (`tenant` = slug) · `POST /auth/refresh` · `POST /auth/logout` · `GET /auth/me` → `{ user, tenant: {id,name,slug,status,custom_domain}, permissions: [] }` · `PUT /auth/profile {name, avatar_url}` · `PUT /auth/password {current_password, password}`
+- `POST /auth/login { tenant, email, password }` (`tenant` = slug) · `POST /auth/refresh` · `POST /auth/logout` · `GET /auth/me` → `{ user, tenant: {id,name,slug,status,site_url}, permissions: [] }` · `PUT /auth/profile {name, avatar_url}` · `PUT /auth/password {current_password, password}`
 - `GET /dashboard` → `{ revenue_today, revenue_month, orders_today, orders_month, customers_total, products_total, low_stock_count, pending_orders, sales_chart: [{date, revenue, orders}] (last 30 days), top_products: [{id,name,quantity,revenue}], recent_orders: [...] }`
 - `CRUD /users` · `CRUD /roles` · `GET /permissions` (grouped like system)
 - `CRUD /products` — filters `status`, `category_id`, `brand_id`, `is_featured`, `stock` (in|low|out). Response includes `category:{id,name}`, `brand:{id,name}`. Extra: `POST /products/bulk { ids, action: "delete"|"activate"|"archive" }`
@@ -195,7 +195,9 @@ notifications: { admin_order_email: "", low_stock_alerts: true, customer_order_e
 - `GET /settings` · `PUT /settings/:group`
 - `POST /uploads` (multipart field `file`, images ≤ 5MB) → `{ url, path, size, mime }`
 
-### Store (`/store`) — public, tenant from `X-Tenant` / `X-Store-Domain` / Host
+### Store (`/store`) — public (any CORS origin), tenant from `X-Tenant` / `X-Store-Domain` / Host
+- `GET /platform` (no tenant needed) → `{ name, tagline, admin_url, support_email, plans: [{name, slug, description, price_monthly, price_yearly, currency, features}] }`
+- `GET /resolve` → `{ tenant: {name, slug, status}, store_url }`; 404 `TENANT_NOT_FOUND` / 403 `TENANT_SUSPENDED` (used by the storefront proxy)
 - `GET /settings` (see §4)
 - `GET /products` — filters `category` (slug), `brand` (slug), `min_price`, `max_price`, `featured=true`, `sort` = `newest|price_asc|price_desc|name|popular`, `page`, `limit`, `search`. Only `status=active`.
 - `GET /products/:slug` → product + `related: [...]` (4 same-category)
@@ -232,10 +234,10 @@ notifications: { admin_order_email: "", low_stock_alerts: true, customer_order_e
 ## 6. Seed data (`npm run seed`)
 - System admin: `admin@zcommerce.test` / `password123` (role Super Admin `*`)
 - Plans: Starter ($19), Growth ($49), Pro ($99)
-- Tenant `demo` (name "Demo Store", custom_domain `localhost`), owner `owner@demo.test` / `password123`, active Growth subscription + 2 invoices
+- Tenant `demo` (name "Demo Store", site_url `http://localhost:3001`; also bloom → `http://localhost:3002`, retro (suspended) → `http://localhost:3003`), owner `owner@demo.test` / `password123`, active Growth subscription + 2 invoices
 - Roles Owner(`*`)/Manager/Staff; 6 categories (2 nested), 5 brands, ~24 products with `https://picsum.photos/seed/<slug>/800/800` images, 3 shipping methods, coupons `WELCOME10` (10%) + `FREESHIP`, pages about/contact/terms/privacy/shipping-returns, ~10 customers, ~25 orders over the last 30 days, approved reviews, full default settings with 3 hero slides.
 
 ## 7. Environment
 Backend `.env`: `PORT=4000`, `DATABASE_URL=postgres://postgres:@127.0.0.1:5432/zcommerce`, `REDIS_URL=redis://127.0.0.1:6379`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `APP_URL=http://localhost:4000`, `CORS_ORIGINS=http://localhost:5173,http://localhost:3001`, `ENCRYPTION_KEY`, SMTP_*.
 Admin `.env`: `VITE_API_URL=http://localhost:4000/api/v1`.
-Store `.env`: `API_URL=http://localhost:4000/api/v1`, `NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1`, `STORE_TENANT=demo` (fallback when host not mapped), `NEXT_PUBLIC_SITE_URL=http://localhost:3001`, `REVALIDATE_SECONDS=60`.
+Store `.env`: `API_URL=http://localhost:4000/api/v1`, `NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1`, `REVALIDATE_SECONDS=60`.

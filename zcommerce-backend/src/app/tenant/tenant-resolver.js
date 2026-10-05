@@ -2,9 +2,8 @@ import { db } from '../database/connection.js';
 import redisConfig from '../config/redis.config.js';
 import appConfig from '../config/app.config.js';
 import { cache } from '../../shared/utils/cache.js';
-import { normalizeHost } from '../../shared/utils/index.js';
 
-const TENANT_COLUMNS = ['id', 'name', 'slug', 'custom_domain', 'site_url', 'site_host', 'email', 'phone', 'status', 'plan_id', 'trial_ends_at', 'owner_id'];
+const TENANT_COLUMNS = ['id', 'name', 'slug', 'site_url', 'site_host', 'email', 'phone', 'status', 'plan_id', 'trial_ends_at', 'owner_id'];
 
 export const tenantColumns = TENANT_COLUMNS;
 
@@ -29,7 +28,6 @@ export async function resolveTenantById(id) {
 export async function invalidateTenantCache(tenant) {
   if (!tenant) return;
   const keys = [redisConfig.keys.tenantId(tenant.id), redisConfig.keys.tenantSlug(tenant.slug)];
-  if (tenant.custom_domain) keys.push(redisConfig.keys.tenantDomain(normalizeHost(tenant.custom_domain)));
   if (tenant.site_host) keys.push(redisConfig.keys.tenantDomain(tenant.site_host));
   await cache.del(keys);
 }

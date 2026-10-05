@@ -45,13 +45,30 @@ export function TenantsPage() {
             </div>
             <div>
               <div className="font-medium">{row.original.name}</div>
-              <div className="text-muted-foreground text-xs">
-                {row.original.slug}
-                {row.original.custom_domain ? ` · ${row.original.custom_domain}` : ""}
-              </div>
+              <div className="text-muted-foreground text-xs">{row.original.slug}</div>
             </div>
           </div>
         ),
+      },
+      {
+        accessorKey: "site_url",
+        meta: { label: "Store URL" },
+        header: "Store URL",
+        cell: ({ row }) =>
+          row.original.site_url ? (
+            <a
+              href={row.original.site_url}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-primary inline-flex items-center gap-1 hover:underline"
+            >
+              {row.original.site_url.replace(/^https?:\/\//, "")}
+              <TbExternalLink className="size-3.5" />
+            </a>
+          ) : (
+            <span className="text-muted-foreground">Not set</span>
+          ),
       },
       { accessorKey: "email", header: "Email", cell: ({ row }) => <span className="text-muted-foreground">{row.original.email}</span> },
       {
@@ -102,8 +119,8 @@ export function TenantsPage() {
                 {
                   label: "Open storefront",
                   icon: TbExternalLink,
-                  hidden: !t.custom_domain,
-                  onClick: () => window.open(`http://${t.custom_domain}`, "_blank"),
+                  hidden: !t.site_url,
+                  onClick: () => t.site_url && window.open(t.site_url, "_blank"),
                 },
                 { label: "Delete", icon: TbTrash, destructive: true, separatorBefore: true, hidden: !can("tenants.delete"), onClick: () => confirmDelete.ask(t) },
               ]}
@@ -139,7 +156,7 @@ export function TenantsPage() {
         isLoading={isLoading}
         isFetching={isFetching}
         state={state}
-        searchPlaceholder="Search name, slug or email…"
+        searchPlaceholder="Search name, slug, email or store URL…"
         filters={[
           {
             key: "status",
