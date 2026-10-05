@@ -1,0 +1,252 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "id": "backend",
+      "label": "Backend (Express API)",
+      "icon": "🟢"
+    },
+    {
+      "id": "database",
+      "label": "Database (Knex)",
+      "icon": "🗄️"
+    },
+    {
+      "id": "admin",
+      "label": "Admin (Vite + React)",
+      "icon": "⚛️"
+    },
+    {
+      "id": "store",
+      "label": "Store (Next.js)",
+      "icon": "🛒"
+    }
+  ],
+  "scripts": [
+    {
+      "id": "backend-dev",
+      "label": "Backend: Run Dev (port 4000)",
+      "groupId": "backend",
+      "run": {
+        "command": "npm --prefix zcommerce-backend run dev",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "backend-start",
+      "label": "Backend: Start",
+      "groupId": "backend",
+      "run": {
+        "command": "npm --prefix zcommerce-backend start",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "backend-worker",
+      "label": "Backend: Run Worker (BullMQ)",
+      "groupId": "backend",
+      "run": {
+        "command": "npm --prefix zcommerce-backend run worker",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "backend-test",
+      "label": "Backend: Test",
+      "groupId": "backend",
+      "run": {
+        "command": "npm --prefix zcommerce-backend test",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "backend-lint",
+      "label": "Backend: Lint",
+      "groupId": "backend",
+      "run": {
+        "command": "npm --prefix zcommerce-backend run lint",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "backend-install",
+      "label": "Backend: Install",
+      "groupId": "backend",
+      "run": {
+        "command": "npm --prefix zcommerce-backend install",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "db-migrate",
+      "label": "DB: Migrate",
+      "groupId": "database",
+      "run": {
+        "command": "npm --prefix zcommerce-backend run migrate",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "db-rollback",
+      "label": "DB: Rollback",
+      "groupId": "database",
+      "run": {
+        "command": "npm --prefix zcommerce-backend run migrate:rollback",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "db-seed",
+      "label": "DB: Seed",
+      "groupId": "database",
+      "run": {
+        "command": "npm --prefix zcommerce-backend run seed",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "db-reset",
+      "label": "DB: Reset (rollback all + migrate + seed)",
+      "groupId": "database",
+      "run": {
+        "command": "npm --prefix zcommerce-backend run db:reset",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "admin-dev",
+      "label": "Admin: Run Dev (port 5173)",
+      "groupId": "admin",
+      "run": {
+        "command": "npm --prefix zcommerce-admin run dev",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "admin-build",
+      "label": "Admin: Build",
+      "groupId": "admin",
+      "run": {
+        "command": "npm --prefix zcommerce-admin run build",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "admin-typecheck",
+      "label": "Admin: Typecheck",
+      "groupId": "admin",
+      "run": {
+        "command": "npm --prefix zcommerce-admin run typecheck",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "admin-preview",
+      "label": "Admin: Preview Build",
+      "groupId": "admin",
+      "run": {
+        "command": "npm --prefix zcommerce-admin run preview",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "admin-install",
+      "label": "Admin: Install",
+      "groupId": "admin",
+      "run": {
+        "command": "npm --prefix zcommerce-admin install",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "store-dev",
+      "label": "Store: Run Dev (port 3001)",
+      "groupId": "store",
+      "run": {
+        "command": "npm --prefix zcommerce-store run dev",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "store-dev-3110",
+      "label": "Store: Run Dev (port 3110)",
+      "groupId": "store",
+      "run": {
+        "command": "npm --prefix zcommerce-store run dev:port -- 3110",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "store-dev-3111",
+      "label": "Store: Run Dev (port 3111)",
+      "groupId": "store",
+      "run": {
+        "command": "npm --prefix zcommerce-store run dev:port -- 3111",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "store-dev-3112",
+      "label": "Store: Run Dev (port 3112)",
+      "groupId": "store",
+      "run": {
+        "command": "npm --prefix zcommerce-store run dev:port -- 3112",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "store-dev-3113",
+      "label": "Store: Run Dev (port 3113)",
+      "groupId": "store",
+      "run": {
+        "command": "npm --prefix zcommerce-store run dev:port -- 3113",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "store-dev-3114",
+      "label": "Store: Run Dev (port 3114)",
+      "groupId": "store",
+      "run": {
+        "command": "npm --prefix zcommerce-store run dev:port -- 3114",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "store-build",
+      "label": "Store: Build",
+      "groupId": "store",
+      "run": {
+        "command": "npm --prefix zcommerce-store run build",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "store-start",
+      "label": "Store: Start (production)",
+      "groupId": "store",
+      "run": {
+        "command": "npm --prefix zcommerce-store start",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "store-lint",
+      "label": "Store: Lint",
+      "groupId": "store",
+      "run": {
+        "command": "npm --prefix zcommerce-store run lint",
+        "type": "shell"
+      }
+    },
+    {
+      "id": "store-install",
+      "label": "Store: Install",
+      "groupId": "store",
+      "run": {
+        "command": "npm --prefix zcommerce-store install",
+        "type": "shell"
+      }
+    }
+  ]
+}
