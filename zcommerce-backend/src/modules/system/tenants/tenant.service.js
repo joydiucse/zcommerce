@@ -129,7 +129,7 @@ export class TenantService {
     if (data.custom_domain === '') data.custom_domain = null;
     await this.assertHostsAvailable(data, id);
     if (data.site_url !== undefined) {
-      data.site_url = data.site_url ? data.site_url.replace(//+$/, '') : null;
+      data.site_url = data.site_url ? data.site_url.replace(/\/+$/, '') : null;
       data.site_host = siteHostOf(data.site_url);
     }
     await this.repo.update(id, data);

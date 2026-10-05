@@ -30,14 +30,15 @@ export class SettingService {
     return deepMerge(SETTINGS_DEFAULTS[group], saved);
   }
 
+  /** Public storefront URL; null when the tenant has none (the storefront then uses the request host). */
   storeUrl(tenant, settings) {
     if (settings.seo?.canonical_url) return settings.seo.canonical_url.replace(/\/+$/, '');
-    if (tenant.site_url) return tenant.site_url.replace(//+$/, '');
+    if (tenant.site_url) return tenant.site_url.replace(/\/+$/, '');
     if (tenant.custom_domain) {
-      const local = /^(localhost|127.|[::1])|.localhost(:|$)/.test(tenant.custom_domain);
+      const local = /^(localhost|127\.|\[::1\])|\.localhost(:|$)/.test(tenant.custom_domain);
       return `${local ? 'http' : 'https'}://${tenant.custom_domain}`;
     }
-    return appConfig.storefrontUrl;
+    return null;
   }
 
   /** Public storefront settings (no `notifications`), cached at `settings:<tenant_id>`. */

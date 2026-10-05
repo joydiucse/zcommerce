@@ -15,10 +15,26 @@ const TAGS_BY_RESOURCE = {
   pages: ['pages', 'sitemap', 'settings'],
 };
 
+/** Storefront servers to notify: the shared STOREFRONT_URL plus the tenant's own site_url (deduped). */
+function targetsFor(tenant) {
+  const origins = [appConfig.storefrontUrl, tenant?.site_url].map((u) => {
+    try {
+      return u ? new URL(u).origin : null;
+    } catch {
+      return null;
+    }
+  });
+  return [...new Set(origins.filter(Boolean))];
+}
+
 /** Fire-and-forget POST to the Next.js storefront's /api/revalidate webhook. */
-export function revalidateStorefront(tags) {
-  if (!env.REVALIDATE_SECRET || !appConfig.storefrontUrl || !tags.length) return;
-  fetch(`${appConfig.storefrontUrl}/api/revalidate`, {
+export function revalidateStorefront(tags, tenant = null) {
+  if (!env.REVALIDATE_SECRET || !tags.length) return;
+  for (const origin of targetsFor(tenant)) postRevalidate(origin, tags);
+}
+
+function postRevalidate(origin, tags) {
+  fetch(`${origin}/api/revalidate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-revalidate-secret': env.REVALIDATE_SECRET },
     body: JSON.stringify({ tags }),
@@ -27,7 +43,7 @@ export function revalidateStorefront(tags) {
     .then((res) => {
       if (!res.ok) logger.warn({ status: res.status, tags }, 'storefront revalidate rejected');
     })
-    .catch((err) => logger.debug({ err: err.message, tags }, 'storefront revalidate unreachable'));
+    .catch((err) => logger.debug({ err: err.message, origin, tags }, 'storefront revalidate unreachable'));
 }
 
 /**
@@ -41,7 +57,7 @@ export function storefrontRevalidateMiddleware() {
     const tags = TAGS_BY_RESOURCE[resource];
     if (!tags) return next();
     res.on('finish', () => {
-      if (res.statusCode < 400) revalidateStorefront(tags);
+      if (res.statusCode < 400) revalidateStorefront(tags, req.tenant);
     });
     return next();
   };

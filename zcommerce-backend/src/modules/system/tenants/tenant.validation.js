@@ -9,7 +9,7 @@ const domain = z
   .preprocess((v) => (typeof v === 'string' ? normalizeHost(v) : v), z
     .string()
     .max(255)
-    .regex(/^[a-z0-9.-]+(:d{1,5})?$/, 'Invalid domain, use host or host:port'))
+    .regex(/^[a-z0-9.-]+(:\d{1,5})?$/, 'Invalid domain, use host or host:port'))
   .nullable()
   .optional()
   .or(z.literal(''));
@@ -18,7 +18,7 @@ const siteUrl = z
   .trim()
   .max(500)
   .url('Must be a full URL, e.g. https://shop.example.com')
-  .refine((u) => /^https?:///i.test(u), 'Must start with http:// or https://')
+  .refine((u) => /^https?:\/\//i.test(u), 'Must start with http:// or https://')
   .nullable()
   .optional()
   .or(z.literal(''));
