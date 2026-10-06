@@ -1,13 +1,13 @@
 node_modules
-npm-debug.log*
+.next
+out
+build
+coverage
 .env*
 !.env.example
-logs
-storage
-tests
-coverage
-docs
-scripts
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
 .idea
 .vscode
 .git
@@ -15,4 +15,5 @@ scripts
 Dockerfile
 .dockerignore
 README.md
-vitest.config.js
+AGENTS.md
+CLAUDE.md

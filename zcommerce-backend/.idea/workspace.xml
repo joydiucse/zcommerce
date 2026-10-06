@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ada2a365-50cf-4fe2-80a6-3ea1e6fb74f4" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution>
+      <execution>
+        <execution />
+      </execution>
+    </execution>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="5" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0000000001071623" />
+      <entry key="MS500" value="1.0122116763216924" />
+      <entry key="S2" value="1.5306981852529544" />
+      <entry key="S5" value="2.170917072946061" />
+      <entry key="S10" value="2.5291122718088506" />
+      <entry key="S30" value="2.8773051902763704" />
+      <entry key="S60" value="3.3771749837676177" />
+      <entry key="M2" value="4.452333755273424" />
+      <entry key="M5" value="6.053653705567482" />
+      <entry key="M10" value="6.906698106514625" />
+      <entry key="M15" value="7.241322569448305" />
+      <entry key="M30" value="7.604889604049846" />
+      <entry key="H1" value="7.798330201748033" />
+      <entry key="H2" value="7.898114151507821" />
+      <entry key="H4" value="7.948791496748962" />
+      <entry key="D1" value="7.991428119728152" />
+      <entry key="W1" value="7.998774533179933" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.009355302475748504" />
+      <entry key="MS500" value="0.40478286571514654" />
+      <entry key="S2" value="1.3195229355110105" />
+      <entry key="S5" value="2.0791934354220873" />
+      <entry key="S10" value="2.481824562755649" />
+      <entry key="S30" value="2.8610676119213783" />
+      <entry key="S60" value="3.3681143335971835" />
+      <entry key="M2" value="4.446337143650537" />
+      <entry key="M5" value="6.0502201152002195" />
+      <entry key="M10" value="6.904684129627564" />
+      <entry key="M15" value="7.23990021815674" />
+      <entry key="M30" value="7.6041345784636825" />
+      <entry key="H1" value="7.797940913967176" />
+      <entry key="H2" value="7.897916456462739" />
+      <entry key="H4" value="7.948691872629613" />
+      <entry key="D1" value="7.9914114066574164" />
+      <entry key="W1" value="7.998772142912124" />
+    </decayedShown>
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="D:\laragon\bin\php\php-8.3.13-Win32-vs16-x64\php.exe" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4,
+  "fromUser": false
+}]]></component>
+  <component name="ProjectId" id="3KGgFTUJUr8cRcx5dDKv5uz0Mip" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "master",
+    "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true"
+  },
+  "keyToStringList": {
+    "stardust.markdown.MarkdownSplitEditorSuppressor:keyList": []
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-PS-262.8665.325" />
+        <option value="bundled-php-predefined-a98d8de5180a-ff90ddd8021d-com.jetbrains.php.sharedIndexes-PS-262.8665.325" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ada2a365-50cf-4fe2-80a6-3ea1e6fb74f4" name="Changes" comment="" />
+      <created>1791189217815</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1791189217815</updated>
+      <workItem from="1791189221206" duration="952000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

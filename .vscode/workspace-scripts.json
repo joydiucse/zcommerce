@@ -160,55 +160,10 @@
     },
     {
       "id": "store-dev",
-      "label": "Store: Run Dev (port 3001)",
+      "label": "Store: Run Dev (port 3000)",
       "groupId": "store",
       "run": {
         "command": "npm --prefix zcommerce-store run dev",
-        "type": "shell"
-      }
-    },
-    {
-      "id": "store-dev-3110",
-      "label": "Store: Run Dev (port 3110)",
-      "groupId": "store",
-      "run": {
-        "command": "npm --prefix zcommerce-store run dev:port -- 3110",
-        "type": "shell"
-      }
-    },
-    {
-      "id": "store-dev-3111",
-      "label": "Store: Run Dev (port 3111)",
-      "groupId": "store",
-      "run": {
-        "command": "npm --prefix zcommerce-store run dev:port -- 3111",
-        "type": "shell"
-      }
-    },
-    {
-      "id": "store-dev-3112",
-      "label": "Store: Run Dev (port 3112)",
-      "groupId": "store",
-      "run": {
-        "command": "npm --prefix zcommerce-store run dev:port -- 3112",
-        "type": "shell"
-      }
-    },
-    {
-      "id": "store-dev-3113",
-      "label": "Store: Run Dev (port 3113)",
-      "groupId": "store",
-      "run": {
-        "command": "npm --prefix zcommerce-store run dev:port -- 3113",
-        "type": "shell"
-      }
-    },
-    {
-      "id": "store-dev-3114",
-      "label": "Store: Run Dev (port 3114)",
-      "groupId": "store",
-      "run": {
-        "command": "npm --prefix zcommerce-store run dev:port -- 3114",
         "type": "shell"
       }
     },
@@ -223,7 +178,7 @@
     },
     {
       "id": "store-start",
-      "label": "Store: Start (production)",
+      "label": "Store: Start (port 3000)",
       "groupId": "store",
       "run": {
         "command": "npm --prefix zcommerce-store start",

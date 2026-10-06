@@ -1,13 +1,11 @@
 node_modules
-npm-debug.log*
+dist
+dist-ssr
+.vite
 .env*
 !.env.example
-logs
-storage
-tests
-coverage
-docs
-scripts
+*.tsbuildinfo
+*.log
 .idea
 .vscode
 .git
@@ -15,4 +13,3 @@ scripts
 Dockerfile
 .dockerignore
 README.md
-vitest.config.js

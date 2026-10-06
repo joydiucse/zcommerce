@@ -10,13 +10,13 @@ The store talks only to the backend `/store/*` API described in [`../CONTRACT.md
 cd zcommerce-store
 cp .env.example .env.local   # already present for local dev
 npm install
-npm run dev                  # http://localhost:3001
+npm run dev                  # http://localhost:3000  (another port: npm run dev -- -p 3110)
 ```
 
 Production:
 
 ```bash
-npm run build && npm run start   # port 3000
+npm run build && npm run start   # port 3000 (or: npm run start -- -p 3110)
 ```
 
 Other scripts: `npm run lint` (ESLint), `npm run typecheck` (tsc).
@@ -51,7 +51,7 @@ How it works:
 3. Unknown or suspended hosts are rewritten to `/store-unavailable/…`, which renders `GET /store/platform` (platform name, tagline, merchant login link and plans).
 4. Every server-side API call sends `X-Store-Domain: <host:port>`. Canonical, OG and sitemap URLs use `seo.canonical_url`, then the tenant's Store URL (`store_url` from the API), then the request host. `robots.txt` disallows everything and `sitemap.xml` is empty on unknown hosts.
 
-To put a merchant on their own domain: point the domain's DNS at the storefront deployment, then set the tenant's Store URL to `https://their-domain`. Locally, set it to `http://localhost:<port>` and run a store on that port (`npm run dev:port -- <port>`), or point several hosts at one server.
+To put a merchant on their own domain: point the domain's DNS at the storefront deployment, then set the tenant's Store URL to `https://their-domain`. Locally, set it to `http://localhost:<port>` and start the store on that port with `npm run dev -- -p <port>`.
 
 Browser-side calls send `X-Tenant: <settings.tenant.slug>`, which the root layout passes down through `StoreProvider`. The backend's public `/store` API accepts any origin (storefronts live on arbitrary domains and use bearer tokens, not cookies).
 
@@ -86,7 +86,7 @@ Browser-side calls send `X-Tenant: <settings.tenant.slug>`, which the root layou
 `POST /api/revalidate` busts cached data on demand. The admin panel or the backend can call it after content changes.
 
 ```bash
-curl -X POST http://localhost:3001/api/revalidate \
+curl -X POST http://localhost:3000/api/revalidate \
   -H "x-revalidate-secret: change-me" \
   -H "content-type: application/json" \
   -d '{"tags":["settings"]}'

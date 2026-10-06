@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Set by scripts/dev-port.mjs so several dev servers can run side by side
-  distDir: process.env.NEXT_DIST_DIR || ".next",
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "picsum.photos" },
@@ -26,6 +24,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  output: "standalone",
 };
 
 export default nextConfig;

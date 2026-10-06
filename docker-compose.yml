@@ -1,0 +1,126 @@
+name: zcommerce
+
+# ==========================================
+# Public URLs baked into the frontend bundles at BUILD time.
+# Change these, then rebuild: docker compose build admin store
+# ==========================================
+x-public-urls:
+  api: &public-api-url http://localhost:4200/api/v1
+  store: &public-store-url http://localhost:3200
+
+# Shared backend settings (api, worker, migrate)
+x-backend: &backend
+  build:
+    context: ./zcommerce-backend
+  image: zcommerce-backend:latest
+  env_file:
+    - ./zcommerce-backend/.env.production
+  environment:
+    NODE_ENV: production
+    PORT: "4200"
+  # Postgres and Redis run on the host; make host.docker.internal resolve on Linux too
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  init: true
+  restart: unless-stopped
+  networks:
+    - zcommerce
+  logging: &logging
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "5"
+
+services:
+
+  # ==========================================
+  # DB migrations - one-shot, runs before api/worker start
+  # ==========================================
+  migrate:
+    <<: *backend
+    restart: "no"
+    command: ["node", "node_modules/knex/bin/cli.js", "--knexfile", "knexfile.js", "migrate:latest"]
+
+  # ==========================================
+  # Backend API - Node.js / Express
+  # ==========================================
+  backend:
+    <<: *backend
+    container_name: zcommerce-backend
+    ports:
+      # Bound to localhost only; expose publicly through the host reverse proxy
+      - "127.0.0.1:4200:4200"
+    volumes:
+      - uploads:/app/storage/uploads
+      - backend-logs:/app/logs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  # ==========================================
+  # Background jobs - BullMQ worker
+  # ==========================================
+  worker:
+    <<: *backend
+    container_name: zcommerce-worker
+    command: ["node", "src/jobs/workers/index.js"]
+    healthcheck:
+      disable: true
+    volumes:
+      - uploads:/app/storage/uploads
+      - backend-logs:/app/logs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  # ==========================================
+  # Admin Panel - React + Vite (static, served by nginx)
+  # ==========================================
+  admin:
+    build:
+      context: ./zcommerce-admin
+      args:
+        VITE_API_URL: *public-api-url
+        VITE_STORE_URL: *public-store-url
+    image: zcommerce-admin:latest
+    container_name: zcommerce-admin
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5200:80"
+    networks:
+      - zcommerce
+    logging: *logging
+
+  # ==========================================
+  # Store - Next.js (standalone)
+  # ==========================================
+  store:
+    build:
+      context: ./zcommerce-store
+      args:
+        NEXT_PUBLIC_API_URL: *public-api-url
+    image: zcommerce-store:latest
+    container_name: zcommerce-store
+    restart: unless-stopped
+    init: true
+    env_file:
+      - ./zcommerce-store/.env.production
+    environment:
+      # Server-side calls go straight to the backend over the docker network
+      API_URL: http://backend:4200/api/v1
+    ports:
+      - "127.0.0.1:3200:3200"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - zcommerce
+    logging: *logging
+
+volumes:
+  uploads:
+  backend-logs:
+
+networks:
+  zcommerce:
+    driver: bridge
